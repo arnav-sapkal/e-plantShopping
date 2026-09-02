@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../redux/CartSlice";
 const plants = [
   {id:1,name:"Snake Plant",price:299,category:"Air Purifying"},
   {id:2,name:"Peace Lily",price:399,category:"Air Purifying"},
@@ -35,6 +36,12 @@ const add=id=>{
 setAdded({...added,[id]:true});
 setCount(count+1);
 };
+  const dispatch = useDispatch();
+
+const cartItems = useSelector(state => state.cart.items);
+
+const isAdded = id =>
+  cartItems.some(item => item.id === id);
 
 return(
 <div>
@@ -79,11 +86,20 @@ disabled={added[plant.id]}
 onClick={()=>add(plant.id)}
 style={{padding:"10px 20px"}}
 >
-
+<button
+  disabled={isAdded(plant.id)}
+  onClick={() => dispatch(addItem(plant))}
+>
+  {isAdded(plant.id) ? "Added" : "Add to Cart"}
+</button>
 {added[plant.id]?"Added":"Add to Cart"}
 
 </button>
-
+const totalItems = cartItems.reduce(
+  (sum, item) => sum + item.quantity,
+  0
+);
+  Cart ({totalItems})
 </div>
 
 ))}
